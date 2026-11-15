@@ -1,0 +1,86 @@
+/* Default theme: dark. "static" keeps every token in the output
+   so the light override below always has something to replace. */
+@theme static {
+  /* Surfaces */
+  --color-background: #171816;
+  --color-surface: #20211d;
+  --color-surface-secondary: #1e1f1b;
+  --color-surface-hover: #30312b;
+  --color-surface-selected: #36372f;
+
+  /* Text */
+  --color-foreground: #f4f2ec;
+  --color-muted-foreground: #b7b6af;
+  --color-subtle-foreground: #96958e;
+  --color-disabled-foreground: #a6a399;
+
+  /* Borders */
+  --color-border: #454640;
+  --color-border-strong: #77766e;
+
+  /* Primary action */
+  --color-primary: #7c90ff;
+  --color-primary-hover: #94a5ff;
+  --color-primary-active: #a9b6ff;
+  --color-primary-foreground: #171816;
+  --color-primary-subtle: #272d48;
+
+  /* Status */
+  --color-destructive: #ff8b80;
+  --color-destructive-bg: #3b211f;
+  --color-success: #58d6a0;
+  --color-success-bg: #19352a;
+  --color-warning: #f0bd64;
+  --color-warning-bg: #382c19;
+  --color-info: #91b4ff;
+  --color-info-bg: #202d47;
+
+  /* Shape */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Light theme: only the colors change. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-background: #f7f6f2;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f0eee8;
+  --color-surface-hover: #edebe4;
+  --color-surface-selected: #e8e5dc;
+
+  --color-foreground: #242321;
+  --color-muted-foreground: #5b5a55;
+  --color-subtle-foreground: #6a6963;
+  --color-disabled-foreground: #76746d;
+
+  --color-border: #d8d4ca;
+  --color-border-strong: #8d8a80;
+
+  --color-primary: #3654ff;
+  --color-primary-hover: #2946e8;
+  --color-primary-active: #2039cb;
+  --color-primary-foreground: #ffffff;
+  --color-primary-subtle: #e9edff;
+
+  --color-destructive: #b42318;
+  --color-destructive-bg: #fce8e6;
+  --color-success: #176b45;
+  --color-success-bg: #e3f3e9;
+  --color-warning: #85530a;
+  --color-warning-bg: #fff1d6;
+  --color-info: #2858a6;
+  --color-info-bg: #e7eefc;
+}
+
+@theme inline {
+  --font-sans: var(--font-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
