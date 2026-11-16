@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 const SIZES = {
+  form: "max-w-xl",
   narrow: "max-w-3xl",
   medium: "max-w-4xl",
   wide: "max-w-7xl",
