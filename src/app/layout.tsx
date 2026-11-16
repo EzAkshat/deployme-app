@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
@@ -37,7 +36,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-        <html
+    <html
       lang="en"
       data-theme="dark"
       data-scroll-behavior="smooth"

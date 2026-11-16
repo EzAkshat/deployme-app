@@ -9,6 +9,7 @@ import { DeploymentHistory } from "@/features/projects/components/deployment-his
 import { ProjectList } from "@/features/projects/components/project-list";
 import { getPersonalProjects } from "@/features/projects/queries";
 import { requireUser } from "@/lib/server/require-user";
+import { PlusIcon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -30,7 +31,7 @@ async function DashboardContent({ searchParams }: DashboardProps) {
   // Only a valid ID that belongs to one of this person's projects counts.
   const requested =
     typeof params.history === "string" &&
-    PROJECT_ID_PATTERN.test(params.history)
+      PROJECT_ID_PATTERN.test(params.history)
       ? params.history
       : null;
   const selected = projects.find((project) => project.id === requested) ?? null;
@@ -42,14 +43,9 @@ async function DashboardContent({ searchParams }: DashboardProps) {
         title="Build something. Ship it."
         description="Your projects, from first commit to the web."
         actions={
-          <>
-            <LinkButton href="/new" prefetch={false}>
-              ＋ New project
-            </LinkButton>
-            <LinkButton href="/teams" prefetch={false} variant="secondary">
-              Teams
-            </LinkButton>
-          </>
+          <LinkButton href="/new" prefetch={false}>
+            <PlusIcon /> New project
+          </LinkButton>
         }
       />
 
