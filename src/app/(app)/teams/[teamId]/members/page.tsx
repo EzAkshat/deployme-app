@@ -40,6 +40,10 @@ async function MembersContent({ params }: MembersPageProps) {
 
   return (
     <div className="space-y-6">
+      <BackLink href={`/teams/${encodeURIComponent(teamId)}`}>
+        Team workspace
+      </BackLink>
+
       <PageHeader
         title={team.name}
         description={`Members and invitations · Your role: ${team.role}`}
@@ -56,26 +60,18 @@ async function MembersContent({ params }: MembersPageProps) {
   );
 }
 
-export default async function TeamMembersPage(props: MembersPageProps) {
-  const { teamId } = await props.params;
-
+export default function TeamMembersPage(props: MembersPageProps) {
   return (
     <PageContainer size="medium">
-      <BackLink href={`/teams/${encodeURIComponent(teamId)}`}>
-        Team workspace
-      </BackLink>
-
-      <div className="mt-6">
-        <Suspense
-          fallback={
-            <p role="status" className="text-sm text-muted-foreground">
-              Loading members and invitations…
-            </p>
-          }
-        >
-          <MembersContent {...props} />
-        </Suspense>
-      </div>
+      <Suspense
+        fallback={
+          <p role="status" className="text-sm text-muted-foreground">
+            Loading members and invitations…
+          </p>
+        }
+      >
+        <MembersContent {...props} />
+      </Suspense>
     </PageContainer>
   );
 }
