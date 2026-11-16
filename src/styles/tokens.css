@@ -28,6 +28,7 @@
   /* Status */
   --color-destructive: #ff8b80;
   --color-destructive-bg: #3b211f;
+  --color-destructive-foreground: #171816;
   --color-success: #58d6a0;
   --color-success-bg: #19352a;
   --color-warning: #f0bd64;
@@ -78,6 +79,7 @@
 
   --color-destructive: #b42318;
   --color-destructive-bg: #fce8e6;
+  --color-destructive-foreground: #ffffff;
   --color-success: #176b45;
   --color-success-bg: #e3f3e9;
   --color-warning: #85530a;
