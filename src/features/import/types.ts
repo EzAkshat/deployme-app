@@ -39,7 +39,16 @@ export type GitHubInspection = {
   rootDirectory: string;
   fileNames: string[];
   folders: string[];
-  projectType: "static" | "npm-vite" | "unknown";
+  projectType:
+    | "static"
+    | "npm-vite"
+    | "npm-astro"
+    | "npm-next"
+    | "npm-nuxt"
+    | "npm-sveltekit"
+    | "npm-angular"
+    | "npm-custom"
+    | "unknown";
   requiresReview: boolean;
   reasons: string[];
   settings: {
@@ -76,6 +85,7 @@ export type DeployProjectInput = {
   buildCommand: string;
   outputDirectory: string;
   spaFallback: boolean;
+  publicBuildVariables?: Record<string, string>;
   settingsReviewed: boolean;
   teamId?: string;
   grantCreatorDeploy?: boolean;

@@ -14,6 +14,7 @@ export type ProjectSettings = {
     defaultBranch: string;
     productionBranch: string;
   } | null;
+    publicBuildVariables?: Record<string, string>;
 };
 
 export type BuildSettingsValues = {
@@ -22,6 +23,7 @@ export type BuildSettingsValues = {
   buildCommand: string;
   outputDirectory: string;
   spaFallback: boolean;
+    publicBuildVariables?: Record<string, string>;
 };
 
 export type SettingsState = {

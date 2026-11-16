@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { ID_PATTERN } from "@/lib/ids";
 import { backendRequest } from "@/lib/server/backend";
 import type { SettingsState } from "./types";
+import { readPublicBuildVariables } from "@/features/build-variables/parse";
 
 async function failureMessage(
   response: Response,
@@ -65,7 +66,11 @@ export async function saveProjectSettings(
       message: "Check the directory names and command lengths.",
     };
   }
+  const variableResult = readPublicBuildVariables(formData);
 
+  if (!variableResult.ok) {
+    return { ok: false, message: variableResult.message };
+  }
   let response: Response;
 
   try {
@@ -76,6 +81,9 @@ export async function saveProjectSettings(
         body: {
           ...values,
           spaFallback: formData.get("spaFallback") === "on",
+          ...(variableResult.variables !== undefined && {
+            publicBuildVariables: variableResult.variables,
+          }),
         },
       },
     );
@@ -102,8 +110,8 @@ export async function saveProjectSettings(
   return {
     ok: true,
     message: result?.routingRefreshQueued
-      ? "Settings saved. A live routing update was queued for the SPA fallback change. No rebuild was started."
-      : "Settings saved. Build settings apply to future deployments. No rebuild was started.",
+      ? "Settings saved. A routing update was queued for SPA fallback. Build settings and public variables require a new deployment; no rebuild was started."
+      : "Settings saved. Start a new deployment to publish build-setting or public-variable changes. Existing deployments are unchanged.",
   };
 }
 
@@ -133,7 +141,10 @@ export async function archiveProjectAction(
     if (!current.ok) {
       return {
         ok: false,
-        message: await failureMessage(current, "Unable to verify this project."),
+        message: await failureMessage(
+          current,
+          "Unable to verify this project.",
+        ),
       };
     }
 

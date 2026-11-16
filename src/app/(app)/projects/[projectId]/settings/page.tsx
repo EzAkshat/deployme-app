@@ -16,79 +16,80 @@ import { requireUser } from "@/lib/server/require-user";
 export const metadata: Metadata = { title: "Project settings" };
 
 type SettingsPageProps = {
-  params: Promise<{ projectId: string }>;
+    params: Promise<{ projectId: string }>;
 };
 
 async function SettingsContent({ params }: SettingsPageProps) {
-  await requireUser();
+    await requireUser();
 
-  const { projectId } = await params;
-  if (!ID_PATTERN.test(projectId)) notFound();
+    const { projectId } = await params;
+    if (!ID_PATTERN.test(projectId)) notFound();
 
-  const result = await getProjectSettings(projectId);
+    const result = await getProjectSettings(projectId);
 
-  if (!result.ok) {
+    if (!result.ok) {
+        return (
+            <Alert tone="error">
+                {result.status === 403 || result.status === 404
+                    ? "This project is unavailable or you do not have permission to manage its settings."
+                    : "Unable to load project settings. Please reload to retry."}
+            </Alert>
+        );
+    }
+
+    const { project } = result.data;
+
     return (
-      <Alert tone="error">
-        {result.status === 403 || result.status === 404
-          ? "This project is unavailable or you do not have permission to manage its settings."
-          : "Unable to load project settings. Please reload to retry."}
-      </Alert>
+        <div className="space-y-8">
+            <PageHeader
+                title="Project settings"
+                description={project.name}
+                actions={
+                    <LinkButton
+                        href={`/projects/${encodeURIComponent(project.id)}`}
+                        prefetch={false}
+                        variant="secondary"
+                    >
+                        Project activity
+                    </LinkButton>
+                }
+            />
+
+            <GeneralCard project={project} />
+            <RepositoryCard repository={project.gitRepository} />
+
+            <SettingsPanel
+                projectId={project.id}
+                slug={project.slug}
+                initial={{
+                    rootDirectory: project.rootDirectory,
+                    installCommand: project.installCommand,
+                    buildCommand: project.buildCommand,
+                    outputDirectory: project.outputDirectory,
+                    spaFallback: project.spaFallback,
+                    publicBuildVariables: project.publicBuildVariables,
+                }}
+            />
+        </div>
     );
-  }
-
-  const { project } = result.data;
-
-  return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Project settings"
-        description={project.name}
-        actions={
-          <LinkButton
-            href={`/projects/${encodeURIComponent(project.id)}`}
-            prefetch={false}
-            variant="secondary"
-          >
-            Project activity
-          </LinkButton>
-        }
-      />
-
-      <GeneralCard project={project} />
-      <RepositoryCard repository={project.gitRepository} />
-
-      <SettingsPanel
-        projectId={project.id}
-        slug={project.slug}
-        initial={{
-          rootDirectory: project.rootDirectory,
-          installCommand: project.installCommand,
-          buildCommand: project.buildCommand,
-          outputDirectory: project.outputDirectory,
-          spaFallback: project.spaFallback,
-        }}
-      />
-    </div>
-  );
 }
 
 export default function ProjectSettingsPage(props: SettingsPageProps) {
-  return (
-    <PageContainer size="narrow">
-      <BackLink href="/dashboard">Dashboard</BackLink>
+    return (
+        <PageContainer size="narrow">
+            <BackLink href="/dashboard">Dashboard</BackLink>
 
-      <div className="mt-6">
-        <Suspense
-          fallback={
-            <p role="status" className="text-sm text-muted-foreground">
-              Loading settings…
-            </p>
-          }
-        >
-          <SettingsContent {...props} />
-        </Suspense>
-      </div>
-    </PageContainer>
-  );
+            <div className="mt-6">
+                <Suspense
+                    fallback={
+                        <p role="status" className="text-sm text-muted-foreground">
+                            Loading settings…
+                        </p>
+                    }
+                >
+                    <SettingsContent {...props} />
+                </Suspense>
+            </div>
+        </PageContainer>
+    );
 }
