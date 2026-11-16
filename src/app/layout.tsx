@@ -37,9 +37,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html
+        <html
       lang="en"
       data-theme="dark"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${plexSans.variable} ${plexMono.variable}`}
     >

@@ -37,3 +37,7 @@
     transition-duration: 0.01ms !important;
   }
 }
+/* The wordmark artwork is dark; invert it on dark backgrounds. */
+:root[data-theme="dark"] .brand-wordmark {
+  filter: invert(1);
+}

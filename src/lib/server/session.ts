@@ -1,9 +1,10 @@
 import "server-only";
 
-import { backendRequest } from "@/lib/server/backend";
+import { cache } from "react";
 import type { User } from "@/features/auth/types";
+import { backendRequest } from "@/lib/server/backend";
 
-export async function getCurrentUser(): Promise<User | null> {
+export const getCurrentUser = cache(async (): Promise<User | null> => {
   const response = await backendRequest("/auth/me");
 
   if (response.status === 401) return null;
@@ -14,4 +15,4 @@ export async function getCurrentUser(): Promise<User | null> {
 
   const data = (await response.json()) as { user: User };
   return data.user;
-}
+});

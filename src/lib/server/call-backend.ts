@@ -6,13 +6,15 @@ import type { ActionResult } from "@/lib/result";
 interface CallOptions extends BackendOptions {
   /** Runs after a successful response, before the result is returned. */
   onSuccess?: (response: Response) => Promise<void>;
+  /** Shown when the backend rejects the request without its own message. */
+  failureMessage?: string;
   /** Shown when the backend is unreachable or onSuccess fails. */
   unavailableMessage?: string;
 }
 
 export async function callBackend<T>(
   path: string,
-  { onSuccess, unavailableMessage, ...request }: CallOptions = {},
+  { onSuccess, failureMessage, unavailableMessage, ...request }: CallOptions = {},
 ): Promise<ActionResult<T>> {
   try {
     const response = await backendRequest(path, request);
@@ -27,7 +29,8 @@ export async function callBackend<T>(
             ? data.error.message
             : response.status === 429
               ? "Too many attempts. Please wait before trying again."
-              : "Unable to complete this request. Please try again.",
+              : (failureMessage ??
+                "Unable to complete this request. Please try again."),
       };
     }
 

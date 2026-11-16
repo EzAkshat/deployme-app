@@ -34,7 +34,13 @@
   --color-warning-bg: #382c19;
   --color-info: #91b4ff;
   --color-info-bg: #202d47;
-
+  /* Log viewer: stays dark in both themes */
+  --color-log: #0e0f0d;
+  --color-log-foreground: #e8e6df;
+  --color-log-muted: #9c9a92;
+  --color-log-accent: #8fb4ff;
+  --color-log-danger: #ff9b91;
+  --color-log-warning: #f0c97a;
   /* Shape */
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -78,6 +84,13 @@
   --color-warning-bg: #fff1d6;
   --color-info: #2858a6;
   --color-info-bg: #e7eefc;
+  /* Log viewer: stays dark in both themes */
+  --color-log: #0e0f0d;
+  --color-log-foreground: #e8e6df;
+  --color-log-muted: #9c9a92;
+  --color-log-accent: #8fb4ff;
+  --color-log-danger: #ff9b91;
+  --color-log-warning: #f0c97a;
 }
 
 @theme inline {

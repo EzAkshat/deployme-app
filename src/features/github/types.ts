@@ -1,0 +1,1 @@
+export type GitHubConnection = { githubLogin: string } | null;
