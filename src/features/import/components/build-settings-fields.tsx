@@ -1,6 +1,7 @@
 import { SelectField } from "@/components/ui/select-field";
 import { TextField } from "@/components/ui/text-field";
 import type { BuildSettings } from "../types";
+import { INSTALL_COMMAND_OPTIONS, isInstallCommand } from "../install-command";
 
 interface BuildSettingsFieldsProps {
   settings: BuildSettings;
@@ -29,14 +30,17 @@ export function BuildSettingsFields({
         <SelectField
           label="Install command"
           value={settings.installCommand}
-          onChange={(event) =>
-            onChange({
-              installCommand: event.target.value === "npm ci" ? "npm ci" : "",
-            })
-          }
+          onChange={(event) => {
+            const value = event.target.value;
+
+            if (isInstallCommand(value)) onChange({ installCommand: value });
+          }}
         >
-          <option value="">None — finished static files</option>
-          <option value="npm ci">npm ci</option>
+          {INSTALL_COMMAND_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </SelectField>
 
         <TextField

@@ -1,3 +1,6 @@
+import type { InstallCommand } from "./install-command";
+import type { DetectedProjectType } from "./project-type";
+
 export type GitHubInstallation = {
   installationId: number;
   accountLogin: string | null;
@@ -39,16 +42,7 @@ export type GitHubInspection = {
   rootDirectory: string;
   fileNames: string[];
   folders: string[];
-  projectType:
-    | "static"
-    | "npm-vite"
-    | "npm-astro"
-    | "npm-next"
-    | "npm-nuxt"
-    | "npm-sveltekit"
-    | "npm-angular"
-    | "npm-custom"
-    | "unknown";
+  projectType: DetectedProjectType;
   requiresReview: boolean;
   reasons: string[];
   settings: {
@@ -65,7 +59,7 @@ export type InspectionState = {
 };
 
 export type BuildSettings = {
-  installCommand: "" | "npm ci";
+  installCommand: InstallCommand;
   buildCommand: string;
   outputDirectory: string;
   spaFallback: boolean;
@@ -81,7 +75,7 @@ export type DeployProjectInput = {
   repositoryName: string;
   commitSha: string;
   rootDirectory: string;
-  installCommand: "" | "npm ci";
+  installCommand: InstallCommand;
   buildCommand: string;
   outputDirectory: string;
   spaFallback: boolean;

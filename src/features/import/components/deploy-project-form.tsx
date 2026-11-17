@@ -7,17 +7,12 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { deployProjectAction } from "../deploy-action";
 import { suggestedSubdomain } from "../subdomain";
-import type {
-    BuildSettings,
-    DeployProjectInput,
-    DeployProjectResult,
-    GitHubInspection,
-    GitHubRepository,
-} from "../types";
+import type { BuildSettings, DeployProjectInput, DeployProjectResult, GitHubInspection, GitHubRepository } from "../types";
 import { BuildSettingsFields } from "./build-settings-fields";
 import { DeploySuccess } from "./deploy-success";
 import { PublicBuildVariablesEditor } from "@/features/build-variables/components/public-build-variables-editor";
 import { readPublicBuildVariables } from "@/features/build-variables/parse";
+import { isInstallCommand } from "../install-command";
 
 interface DeployProjectFormProps {
     repository: GitHubRepository;
@@ -34,7 +29,10 @@ export function DeployProjectForm({
     const detected = inspection.settings;
 
     const [settings, setSettings] = useState<BuildSettings>({
-        installCommand: detected?.installCommand === "npm ci" ? "npm ci" : "",
+        installCommand:
+            detected && isInstallCommand(detected.installCommand)
+                ? detected.installCommand
+                : "",
         buildCommand: detected?.buildCommand ?? "",
         outputDirectory: detected?.outputDirectory ?? "",
         spaFallback: detected?.spaFallback ?? false,
