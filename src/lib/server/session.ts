@@ -14,5 +14,6 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   }
 
   const data = (await response.json()) as { user: User };
+
   return data.user;
 });

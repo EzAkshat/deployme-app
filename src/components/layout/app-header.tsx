@@ -5,6 +5,9 @@ import { Brand } from "./brand";
 import { NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
 import { isAdministrator } from "@/features/auth/roles";
+import Link from "next/link";
+import { getRequestSite } from "@/lib/server/request-site";
+import { isSuperAdmin } from "@/features/auth/roles";
 
 interface HeaderFrameProps {
   nav?: ReactNode;
@@ -34,9 +37,53 @@ export function AppHeaderFallback() {
 
 // Display only: every page still checks the session itself.
 export async function AppHeader() {
-  // Display only: a failed session check must not take the whole page down.
+  const site = await getRequestSite();
   const user = await getCurrentUser().catch(() => null);
+  if (site.isAdmin) {
+    const administrator = user && isAdministrator(user);
 
+    return (
+      <header className="border-b border-border bg-surface">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-5 py-3 sm:px-8">
+          <Link href="/dashboard" className="font-semibold">
+            DeployMe Admin
+          </Link>
+
+          {administrator ? (
+            <nav
+              aria-label="Administration"
+              className="flex flex-wrap gap-4 text-sm"
+            >
+              <Link href="/dashboard" prefetch={false}>
+                Dashboard
+              </Link>
+              <Link href="/users" prefetch={false}>
+                Users
+              </Link>
+              <Link href="/health" prefetch={false}>
+                Service status
+              </Link>
+              {isSuperAdmin(user) ? (
+                <Link href="/audit" prefetch={false}>
+                  Audit history
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
+
+          <div className="ml-auto flex items-center gap-3">
+            {user ? (
+              <span className="text-sm text-muted-foreground">
+                {user.name}
+              </span>
+            ) : null}
+            <ThemeToggle />
+            {user ? <SignOutButton /> : null}
+          </div>
+        </div>
+      </header>
+    );
+  }
   return (
     <HeaderFrame nav={user ? <NavLinks showAdmin={isAdministrator(user)} /> : null}>
       {user ? (

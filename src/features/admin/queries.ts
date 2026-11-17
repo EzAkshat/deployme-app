@@ -1,7 +1,12 @@
 import "server-only";
 
 import { readBackend } from "@/lib/server/read-backend";
-import type { AdminUsersPage, AuditPage, AdminHealth } from "./types";
+import type {
+  AdminUsersPage,
+  AuditPage,
+  AdminHealth,
+  AdminOverview,
+} from "./types";
 
 export function getAdminUsers(search: string, after?: string) {
   const query = new URLSearchParams();
@@ -28,4 +33,8 @@ export function getAdminHealth() {
   return readBackend<{ health: AdminHealth }>("/admin/health", {
     timeoutMs: HEALTH_TIMEOUT_MS,
   });
+}
+
+export function getAdminOverview() {
+  return readBackend<{ overview: AdminOverview }>("/admin/overview");
 }

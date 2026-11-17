@@ -1,9 +1,12 @@
 import { platformRoleLabel } from "@/features/auth/roles";
 import { formatUtcDateTime } from "@/lib/format";
-import { auditActionLabel } from "../audit";
+import { accountStatusLabel } from "../account-status";
+import { auditActionLabel, isAccountStatusChange } from "../audit";
 import type { AuditEntry } from "../types";
 
 export function AuditEntryCard({ entry }: { entry: AuditEntry }) {
+  const statusChange = isAccountStatusChange(entry.action);
+
   return (
     <article className="rounded-xl border border-border bg-surface p-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
@@ -31,13 +34,25 @@ export function AuditEntryCard({ entry }: { entry: AuditEntry }) {
         </div>
 
         <div>
-          <dt className="text-sm text-muted-foreground">Previous role</dt>
-          <dd className="mt-1">{platformRoleLabel(entry.previousRole)}</dd>
+          <dt className="text-sm text-muted-foreground">
+            {statusChange ? "Previous status" : "Previous role"}
+          </dt>
+          <dd className="mt-1">
+            {statusChange
+              ? accountStatusLabel(entry.previousSuspendedAt)
+              : platformRoleLabel(entry.previousRole)}
+          </dd>
         </div>
 
         <div>
-          <dt className="text-sm text-muted-foreground">New role</dt>
-          <dd className="mt-1">{platformRoleLabel(entry.nextRole)}</dd>
+          <dt className="text-sm text-muted-foreground">
+            {statusChange ? "New status" : "New role"}
+          </dt>
+          <dd className="mt-1">
+            {statusChange
+              ? accountStatusLabel(entry.nextSuspendedAt)
+              : platformRoleLabel(entry.nextRole)}
+          </dd>
         </div>
 
         <div className="sm:col-span-3">

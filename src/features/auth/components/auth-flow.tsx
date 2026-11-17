@@ -22,6 +22,7 @@ type Destination = "/login" | "/onboarding" | "/dashboard";
 interface AuthFlowProps {
   initialScreen: "email" | "onboarding";
   initialEmail?: string;
+  admin?: boolean;
 }
 
 const TITLES: Record<Screen, string> = {
@@ -40,9 +41,9 @@ function errorMessage(error: unknown): string {
     : "Something went wrong. Please try again.";
 }
 
-export function AuthFlow({ initialScreen, initialEmail = "" }: AuthFlowProps) {
-  const router = useRouter();
+export function AuthFlow({ initialScreen, initialEmail = "", admin = false, }: AuthFlowProps) {
 
+  const router = useRouter();
   const [screen, setScreen] = useState<Screen>(initialScreen);
   const [email, setEmail] = useState(initialEmail);
   const [challengeId, setChallengeId] = useState("");
@@ -140,7 +141,7 @@ export function AuthFlow({ initialScreen, initialEmail = "" }: AuthFlowProps) {
       ({ user }) => {
         setCode("");
         setChallengeId("");
-        navigate(homePathFor(user));
+        navigate(admin ? "/dashboard" : homePathFor(user));
       },
       () => {
         // Let the person retype from the first box.
@@ -190,7 +191,14 @@ export function AuthFlow({ initialScreen, initialEmail = "" }: AuthFlowProps) {
   }
 
   return (
-    <AuthCard title={TITLES[screen]} busy={busy}>
+    <AuthCard
+      title={
+        admin && screen === "email"
+          ? "Administrator sign in"
+          : TITLES[screen]
+      }
+      busy={busy}
+    >
       {error ? <Alert tone="error">{error}</Alert> : null}
       {notice ? <Alert tone="info">{notice}</Alert> : null}
 

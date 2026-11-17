@@ -12,7 +12,6 @@ import { getAdminUsers } from "@/features/admin/queries";
 import { parseUsersQuery } from "@/features/admin/query";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireUser } from "@/lib/server/require-user";
-import { isSuperAdmin } from "@/features/auth/roles";
 
 export const metadata: Metadata = {
     title: "Users · Administration",
@@ -55,7 +54,7 @@ async function UserDirectory({ searchParams }: UsersPageProps) {
             <PageHeader
                 eyebrow="Platform administration"
                 title="Users"
-                description="Search accounts and view their platform roles."
+                description="Search accounts, view platform roles, and manage account access."
             />
 
             <UserSearchForm search={search} />
@@ -72,11 +71,7 @@ async function UserDirectory({ searchParams }: UsersPageProps) {
                     description="Try a different search or return to the first page."
                 />
             ) : (
-                <UserTable
-                    users={users}
-                    currentUserId={currentUser.id}
-                    canManageRoles={isSuperAdmin(currentUser)}
-                />
+                <UserTable users={users} viewer={currentUser} />
             )}
 
             <UsersPagination

@@ -27,10 +27,21 @@ export function auditUrl(before?: string): string {
   return `/admin/audit?${new URLSearchParams({ before }).toString()}`;
 }
 
+const ACTION_LABELS: Record<string, string> = {
+  USER_PLATFORM_ROLE_CHANGED: "Platform role changed",
+  USER_SUSPENDED: "Account suspended",
+  USER_RESTORED: "Account restored",
+};
+
 export function auditActionLabel(action: string): string {
-  if (action === "USER_PLATFORM_ROLE_CHANGED") return "Platform role changed";
+  if (Object.hasOwn(ACTION_LABELS, action)) return ACTION_LABELS[action];
 
   const text = action.replaceAll("_", " ").toLowerCase();
 
   return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/** Status changes show account status instead of platform roles. */
+export function isAccountStatusChange(action: string): boolean {
+  return action === "USER_SUSPENDED" || action === "USER_RESTORED";
 }

@@ -1,5 +1,5 @@
 import "server-only";
-
+import { getRequestSite } from "@/lib/server/request-site";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE_NAME } from "@/lib/server/session-cookie";
 
@@ -15,11 +15,12 @@ export async function backendRequest(
   options: BackendOptions = {},
 ): Promise<Response> {
   const backendUrl = process.env.BACKEND_URL;
-  const appOrigin = process.env.APP_ORIGIN;
 
-  if (!backendUrl || !appOrigin) {
-    throw new Error("BACKEND_URL and APP_ORIGIN must be configured.");
+  if (!backendUrl) {
+    throw new Error("BACKEND_URL must be configured.");
   }
+
+  const site = await getRequestSite();
 
   const base = new URL(backendUrl);
   const destination = new URL(path, base);
@@ -34,7 +35,7 @@ export async function backendRequest(
 
   const headers = new Headers({
     Accept: "application/json",
-    Origin: new URL(appOrigin).origin,
+    Origin: site.origin,
   });
 
   if (session) {

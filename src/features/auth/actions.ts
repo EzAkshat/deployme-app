@@ -1,5 +1,5 @@
 "use server";
-
+import { getRequestSite } from "@/lib/server/request-site";
 import { callBackend } from "@/lib/server/call-backend";
 import {
   clearSessionCookie,
@@ -45,8 +45,10 @@ export async function verifyOtpAction(
   ) {
     return invalid("Enter the six-digit code.");
   }
+  const site = await getRequestSite();
 
-  return callBackend<UserData>("/auth/verify-otp", {
+  const endpoint = site.isAdmin ? "/auth/admin/verify-otp" : "/auth/verify-otp";
+  return callBackend<UserData>(endpoint, {
     method: "POST",
     body: { email, challengeId, code },
     onSuccess: saveSessionCookie,
@@ -72,7 +74,9 @@ export async function completeOnboardingAction(
   });
 }
 
-export async function logoutAction(): Promise<ActionResult<{ message: string }>> {
+export async function logoutAction(): Promise<
+  ActionResult<{ message: string }>
+> {
   return callBackend<{ message: string }>("/auth/logout", {
     method: "POST",
     onSuccess: clearSessionCookie,

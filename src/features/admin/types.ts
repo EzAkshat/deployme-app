@@ -8,6 +8,8 @@ export type AdminUser = {
   platformRole: PlatformRole;
   createdAt: string;
   onboardingCompletedAt: string | null;
+  suspendedAt?: string | null;
+  accountStateVersion?: number;
 };
 
 export type AdminUsersPage = {
@@ -19,6 +21,8 @@ export type ChangeRoleInput = {
   userId: number;
   expectedRole: "USER" | "SITE_ADMIN";
   nextRole: "USER" | "SITE_ADMIN";
+  previousSuspendedAt?: string | null;
+  nextSuspendedAt?: string | null;
   reason: string;
 };
 
@@ -38,6 +42,8 @@ export type AuditEntry = {
   actorPlatformRole: PlatformRole;
   previousRole: PlatformRole;
   nextRole: PlatformRole;
+  previousSuspendedAt?: string | null;
+  nextSuspendedAt?: string | null;
   reason: string;
   createdAt: string;
   actor: AuditAccount;
@@ -72,5 +78,48 @@ export type AdminHealth = {
   workers: {
     deployment: WorkerHealth;
     outbox: WorkerHealth;
+  };
+};
+
+export type ChangeStatusInput = {
+  userId: number;
+  expectedVersion: number;
+  suspended: boolean;
+  reason: string;
+};
+
+export type ChangeStatusResult = {
+  ok: boolean;
+  message: string;
+  refreshRequired: boolean;
+};
+
+export type AdminDeploymentStatus =
+  | "PENDING"
+  | "QUEUED"
+  | "BUILDING"
+  | "READY"
+  | "FAILED"
+  | "CANCELLED";
+
+export type AdminOverview = {
+  generatedAt: string;
+  users: {
+    total: number;
+  };
+  teams: {
+    total: number;
+  };
+  projects: {
+    total: number;
+    active: number;
+    archived: number;
+  };
+  deployments: {
+    total: number;
+    byStatus: {
+      status: AdminDeploymentStatus;
+      count: number;
+    }[];
   };
 };

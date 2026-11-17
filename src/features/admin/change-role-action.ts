@@ -2,11 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { backendRequest } from "@/lib/server/backend";
-import {
-  ROLE_REASON_MAX,
-  ROLE_REASON_MIN,
-  isChangeableRole,
-} from "./role-change";
+import { REASON_MAX_LENGTH, REASON_MIN_LENGTH } from "./reason";
+import { isChangeableRole } from "./role-change";
 import type { ChangeRoleInput, ChangeRoleResult } from "./types";
 
 const STATUS_MESSAGES: Record<number, string> = {
@@ -33,13 +30,13 @@ export async function changeUserRoleAction(
     input.userId > 2_147_483_647 ||
     !isChangeableRole(input.expectedRole) ||
     !isChangeableRole(input.nextRole) ||
-    reason.length < ROLE_REASON_MIN ||
-    reason.length > ROLE_REASON_MAX
+    reason.length < REASON_MIN_LENGTH ||
+    reason.length > REASON_MAX_LENGTH
   ) {
     return {
       ok: false,
       status: 400,
-      message: `Provide valid roles and a reason between ${ROLE_REASON_MIN} and ${ROLE_REASON_MAX} characters.`,
+      message: `Provide valid roles and a reason between ${REASON_MIN_LENGTH} and ${REASON_MAX_LENGTH} characters.`,
     };
   }
 

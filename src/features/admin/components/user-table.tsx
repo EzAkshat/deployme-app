@@ -1,8 +1,9 @@
 import { platformRoleLabel } from "@/features/auth/roles";
+import type { User } from "@/features/auth/types";
 import { formatUtcDate } from "@/lib/format";
-import { isChangeableRole } from "../role-change";
+import { accountStatusLabel } from "../account-status";
 import type { AdminUser } from "../types";
-import { RoleChangeForm } from "./role-change-form";
+import { UserActions } from "./user-actions";
 
 const HEADINGS = [
   "Account",
@@ -10,24 +11,46 @@ const HEADINGS = [
   "Platform role",
   "Onboarding",
   "Joined (UTC)",
+  "Account status",
+  "Actions",
 ] as const;
 
 interface UserTableProps {
   users: AdminUser[];
-  currentUserId: number;
-  canManageRoles: boolean;
+  viewer: Pick<User, "id" | "platformRole">;
 }
 
-export function UserTable({
-  users,
-  currentUserId,
-  canManageRoles,
-}: UserTableProps) {
+function StatusCell({ suspendedAt }: { suspendedAt: string | null | undefined }) {
+  const label = accountStatusLabel(suspendedAt);
+
+  return (
+    <>
+      <span
+        className={
+          label === "Suspended"
+            ? "font-medium text-destructive"
+            : label === "Unknown"
+              ? "text-muted-foreground"
+              : ""
+        }
+      >
+        {label}
+      </span>
+      {label === "Suspended" && suspendedAt ? (
+        <p className="mt-1 text-xs text-muted-foreground">
+          Since {formatUtcDate(suspendedAt)}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+export function UserTable({ users, viewer }: UserTableProps) {
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-surface p-5">
       <table className="w-full text-left text-sm">
         <caption className="sr-only">
-          Platform accounts and administrator roles
+          Platform accounts, roles and account status
         </caption>
 
         <thead>
@@ -41,11 +64,6 @@ export function UserTable({
                 {heading}
               </th>
             ))}
-            {canManageRoles ? (
-              <th scope="col" className="py-3 pl-5 font-medium">
-                Actions
-              </th>
-            ) : null}
           </tr>
         </thead>
 
@@ -55,7 +73,7 @@ export function UserTable({
               <th scope="row" className="py-4 pr-5 font-normal">
                 <p className="font-medium [overflow-wrap:anywhere]">
                   {user.name}
-                  {user.id === currentUserId ? (
+                  {user.id === viewer.id ? (
                     <span className="ml-2 text-xs text-muted-foreground">
                       (you)
                     </span>
@@ -76,30 +94,19 @@ export function UserTable({
                 {user.onboardingCompletedAt === null ? "Pending" : "Completed"}
               </td>
 
-              <td className="py-4 whitespace-nowrap">
+              <td className="py-4 pr-5 whitespace-nowrap">
                 <time dateTime={user.createdAt}>
                   {formatUtcDate(user.createdAt)}
                 </time>
               </td>
 
-              {canManageRoles ? (
-                <td className="py-4 pl-5 align-top">
-                  {user.id !== currentUserId &&
-                  isChangeableRole(user.platformRole) ? (
-                    <RoleChangeForm
-                      userId={user.id}
-                      username={user.username}
-                      currentRole={user.platformRole}
-                    />
-                  ) : (
-                    <span className="text-sm text-muted-foreground">
-                      {user.id === currentUserId
-                        ? "Your account"
-                        : "Protected role"}
-                    </span>
-                  )}
-                </td>
-              ) : null}
+              <td className="py-4 pr-5 whitespace-nowrap">
+                <StatusCell suspendedAt={user.suspendedAt} />
+              </td>
+
+              <td className="py-4 align-top">
+                <UserActions viewer={viewer} user={user} />
+              </td>
             </tr>
           ))}
         </tbody>
