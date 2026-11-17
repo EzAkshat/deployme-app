@@ -3,27 +3,40 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+type NavLink = {
+  href: string;
+  label: string;
+  isActive: (path: string) => boolean;
+};
+
+const LINKS: NavLink[] = [
   {
     href: "/dashboard",
     label: "Dashboard",
-    isActive: (path: string) => path === "/dashboard",
+    isActive: (path) => path === "/dashboard",
   },
   {
     href: "/teams",
     label: "Teams",
-    isActive: (path: string) =>
+    isActive: (path) =>
       path.startsWith("/teams") || path.startsWith("/invitations"),
   },
 ];
 
-export function NavLinks() {
+const ADMIN_LINK: NavLink = {
+  href: "/admin",
+  label: "Administration",
+  isActive: (path) => path.startsWith("/admin"),
+};
+
+export function NavLinks({ showAdmin = false }: { showAdmin?: boolean }) {
   const pathname = usePathname();
+  const links = showAdmin ? [...LINKS, ADMIN_LINK] : LINKS;
 
   return (
     <nav aria-label="Main">
       <ul className="flex gap-1">
-        {LINKS.map((link) => {
+        {links.map((link) => {
           const active = link.isActive(pathname);
 
           return (

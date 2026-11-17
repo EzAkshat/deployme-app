@@ -20,3 +20,19 @@ export function formatBytes(value: number | null | undefined): string {
 
   return `${(value / 1024 ** 3).toFixed(2)} GiB`;
 }
+
+export function formatUtcDate(value: string): string {
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime())
+    ? "Unavailable"
+    : date.toISOString().slice(0, 10);
+}
+
+export function formatUtcDateTime(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "Unavailable";
+
+  return `${date.toISOString().slice(0, 19).replace("T", " ")} UTC`;
+}

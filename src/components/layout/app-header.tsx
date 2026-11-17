@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/server/session";
 import { Brand } from "./brand";
 import { NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
+import { isAdministrator } from "@/features/auth/roles";
 
 interface HeaderFrameProps {
   nav?: ReactNode;
@@ -33,10 +34,11 @@ export function AppHeaderFallback() {
 
 // Display only: every page still checks the session itself.
 export async function AppHeader() {
-  const user = await getCurrentUser();
+  // Display only: a failed session check must not take the whole page down.
+  const user = await getCurrentUser().catch(() => null);
 
   return (
-    <HeaderFrame nav={user ? <NavLinks /> : null}>
+    <HeaderFrame nav={user ? <NavLinks showAdmin={isAdministrator(user)} /> : null}>
       {user ? (
         <span
           className="max-w-48 truncate text-sm text-muted-foreground"
