@@ -38,7 +38,10 @@ export type InvitationView = TeamInvitation & {
 };
 
 /** State for create-team and accept-invitation. */
-export type TeamActionState = { message: string };
+export type TeamActionState = {
+  message: string;
+  declined?: boolean;
+};
 
 /** State for member, invitation, transfer and leave operations. */
 export type TeamManagementState = { ok: boolean; message: string };

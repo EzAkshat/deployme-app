@@ -48,7 +48,7 @@ async function InvitationContent({ searchParams }: AcceptPageProps) {
 
   if (
     token !== undefined &&
-    (typeof token !== "string" || !/^[a-f0-9]{64}$/i.test(token))
+    (typeof token !== "string" || !/^(?:[A-Za-z0-9_-]{8}|[a-fA-F0-9]{64})$/.test(token))
   ) {
     return (
       <Alert tone="error">

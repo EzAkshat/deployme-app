@@ -123,7 +123,7 @@ async function ProjectsContent({
     const response = await backendRequest(
         `/admin/projects${query.size ? `?${query.toString()}` : ""}`,
     );
-    
+
 
     if (response.status === 401) redirect("/");
     if (response.status === 403) notFound();
@@ -205,7 +205,13 @@ async function ProjectsContent({
                             {data.projects.map((project) => (
                                 <tr key={project.id} className="border-t border-border">
                                     <td className="p-4 align-top">
-                                        <div className="font-medium">{project.name}</div>
+                                        <Link
+                                            href={`/projects/${encodeURIComponent(project.id)}`}
+                                            prefetch={false}
+                                            className="font-medium underline underline-offset-4"
+                                        >
+                                            {project.name}
+                                        </Link>
                                         <div className="text-muted-foreground">
                                             {project.subdomain ?? project.slug}
                                         </div>
@@ -266,8 +272,8 @@ async function ProjectsContent({
                     <Link
                         href={
                             search
-                                ? `/admin/projects?${new URLSearchParams({ search }).toString()}`
-                                : "/admin/projects"
+                                ? `/projects?${new URLSearchParams({ search }).toString()}`
+                                : "/projects"
                         }
                         prefetch={false}
                         className="underline"
@@ -278,7 +284,7 @@ async function ProjectsContent({
 
                 {data.nextCursor ? (
                     <Link
-                        href={`/admin/projects?${nextQuery.toString()}`}
+                        href={`/projects?${nextQuery.toString()}`}
                         prefetch={false}
                         className="underline"
                     >

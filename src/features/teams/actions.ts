@@ -7,7 +7,7 @@ import { backendRequest } from "@/lib/server/backend";
 import type { TeamActionState } from "./types";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const TOKEN_PATTERN = /^[a-f0-9]{64}$/i;
+const TOKEN_PATTERN = /^(?:[A-Za-z0-9_-]{8}|[a-fA-F0-9]{64})$/;
 
 async function failure(response: Response): Promise<TeamActionState> {
   if (response.status === 401) {
@@ -79,7 +79,7 @@ export async function acceptTeamInvitationAction(
   if (!TOKEN_PATTERN.test(token)) {
     return {
       message:
-        "Use the invitation link from your email or enter its 64-character token.",
+        "Use the invitation link from your email or enter its invitation code.",
     };
   }
 
@@ -103,4 +103,51 @@ export async function acceptTeamInvitationAction(
 
   revalidatePath("/teams");
   redirect(teamPath(data?.membership?.teamId));
+}
+export async function respondToTeamInvitationAction(
+  previous: TeamActionState,
+  formData: FormData,
+): Promise<TeamActionState> {
+  const operation = formData.get("operation");
+
+  if (operation === "accept") {
+    return acceptTeamInvitationAction(previous, formData);
+  }
+
+  if (operation !== "decline") {
+    return { message: "Choose Accept invitation or Decline invitation." };
+  }
+
+  const rawToken = formData.get("token");
+  const token = typeof rawToken === "string" ? rawToken.trim() : "";
+
+  if (!TOKEN_PATTERN.test(token)) {
+    return {
+      message:
+        "Use the invitation link from your email or enter its invitation code.",
+    };
+  }
+
+  let response: Response;
+
+  try {
+    response = await backendRequest("/teams/invitations/decline", {
+      method: "POST",
+      body: { token },
+    });
+  } catch {
+    return {
+      message:
+        "Could not confirm the decline. You can retry declining; repeating this action will not join the team.",
+    };
+  }
+
+  if (!response.ok) return failure(response);
+
+  revalidatePath("/teams");
+
+  return {
+    declined: true,
+    message: "Invitation declined. You have not joined the team.",
+  };
 }

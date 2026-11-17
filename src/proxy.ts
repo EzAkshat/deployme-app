@@ -18,6 +18,22 @@ const LEGACY_ROUTES: Record<string, string> = {
   "/admin/projects": "/projects",
 };
 
+function getAdminInternalPath(path: string): string | undefined {
+  if (/^\/projects\/[A-Za-z0-9]{1,128}$/.test(path)) {
+    return `/admin${path}`;
+  }
+
+  return ADMIN_ROUTES[path];
+}
+
+function getAdminPublicPath(path: string): string | undefined {
+  if (/^\/admin\/projects\/[A-Za-z0-9]{1,128}$/.test(path)) {
+    return path.slice("/admin".length);
+  }
+
+  return LEGACY_ROUTES[path];
+}
+
 export function proxy(request: NextRequest) {
   const appOrigin = process.env.APP_ORIGIN;
   const adminOrigin = process.env.ADMIN_ORIGIN;
@@ -49,7 +65,7 @@ export function proxy(request: NextRequest) {
         return new NextResponse("Not found.", { status: 404 });
       }
 
-      const targetPath = LEGACY_ROUTES[path];
+      const targetPath = getAdminPublicPath(path);
 
       if (!targetPath) {
         return new NextResponse("Not found.", { status: 404 });
@@ -77,7 +93,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Keep existing admin links functional while using clean public URLs.
-  const canonicalPath = LEGACY_ROUTES[path];
+  const canonicalPath = getAdminPublicPath(path);
 
   if (canonicalPath) {
     if (isRead) {
@@ -91,7 +107,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const internalPath = ADMIN_ROUTES[path];
+  const internalPath = getAdminInternalPath(path);
 
   if (!internalPath) {
     return new NextResponse("Not found.", { status: 404 });
